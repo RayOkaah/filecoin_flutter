@@ -55,7 +55,7 @@ String parameterToString(dynamic value) {
   if (value is DateTime) {
     return value.toUtc().toIso8601String();
   }
-  if (value is PinStatus) {
+    if (value is PinStatus) {
     return PinStatusTypeTransformer().encode(value).toString();
   }
   return value.toString();

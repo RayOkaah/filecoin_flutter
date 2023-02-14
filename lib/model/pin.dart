@@ -3,7 +3,7 @@ part of FilecoinStorage.client;
 class Pin {
   /// Returns a new [Pin] instance.
   Pin({
-    this.peerId,
+    required this.peerId,
     this.peerName,
     this.region,
     this.status,
@@ -76,8 +76,8 @@ class Pin {
   /// Returns a new [Pin] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static Pin? fromJson(dynamic value) {
-    if (value is Map) {
+  static Pin? fromJson(Map value) {
+    if (value != null) {
       final json = value.cast<String, dynamic>();
 
       // Ensure that the map contains the required keys.
@@ -108,7 +108,8 @@ class Pin {
     dynamic json, {
     bool growable = false,
   }) {
-    final result = <Pin>[];
+    final result = json; //<Pin>[];
+    /**
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
         final value = Pin.fromJson(row);
@@ -117,7 +118,8 @@ class Pin {
         }
       }
     }
-    return result.toList(growable: growable);
+    */
+    return result; //.toList(growable: growable);
   }
 
   static Map<String, Pin> mapFromJson(dynamic json) {
@@ -156,5 +158,5 @@ class Pin {
   }
 
   /// The list of required keys that must be present in a JSON.
-  static const requiredKeys = <String>{};
+  static const requiredKeys = <String>{"peerId"};
 }

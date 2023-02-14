@@ -144,7 +144,8 @@ class Deal {
     dynamic json, {
     bool growable = false,
   }) {
-    final result = <Deal>[];
+    final result = json; //<Deal>[];
+    /**
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
         final value = Deal.fromJson(row);
@@ -153,7 +154,8 @@ class Deal {
         }
       }
     }
-    return result.toList(growable: growable);
+    */
+    return result;//.toList(growable: growable);
   }
 
   static Map<String, Deal> mapFromJson(dynamic json) {

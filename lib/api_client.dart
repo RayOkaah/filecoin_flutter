@@ -172,7 +172,7 @@ class ApiClient {
       deserialize(json, targetType, growable: growable);
 
   @Deprecated(
-      'Scheduled for removal in OpenAPI Generator 6.x. Use deserializeAsync() instead.')
+      'Scheduled for removal, use deserializeAsync() instead.')
   dynamic deserialize(
     String json,
     String targetType, {
@@ -192,7 +192,7 @@ class ApiClient {
   Future<String> serializeAsync(Object? value) async => serialize(value);
 
   @Deprecated(
-      'Scheduled for removal in OpenAPI Generator 6.x. Use serializeAsync() instead.')
+      'Scheduled for removal. Use serializeAsync() instead.')
   String serialize(Object? value) => value == null ? '' : json.encode(value);
 
   /// Update query and header parameters based on authentication settings.

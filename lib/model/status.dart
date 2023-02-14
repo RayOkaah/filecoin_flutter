@@ -67,7 +67,8 @@ class Status {
   // ignore: prefer_constructors_over_static_methods
   static Status? fromJson(dynamic value) {
     if (value is Map) {
-      final json = value.cast<String, dynamic>();
+      final json = value; //value.cast<String, dynamic>();
+      print('jason '+json.toString());
 
       // Ensure that the map contains the required keys.
       // Note 1: the values aren't checked for validity beyond being non-null.

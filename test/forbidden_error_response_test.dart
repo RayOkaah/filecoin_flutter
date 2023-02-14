@@ -5,15 +5,23 @@ import 'package:test/test.dart';
 void main() {
   // final instance = ForbiddenErrorResponse();
 
+  Map<String, dynamic> sampleForbiddenErrorResponseMap = {
+    'name': 'errorname',
+    'message': ForbiddenErrorResponseMessageEnum.tokenIsNotValid
+  };
+
+  ForbiddenErrorResponse sampleForbiddenErrorResponse = ForbiddenErrorResponse(
+      name: 'errorname',
+      message: ForbiddenErrorResponseMessageEnum.tokenIsNotValid
+  );
+
   group('test ForbiddenErrorResponse', () {
     // String name (default value: 'HTTP Error')
-    test('to test the property `name`', () async {
-      // TODO
-    });
-
     // String message
-    test('to test the property `message`', () async {
-      // TODO
+
+    test("To test ForbiddenErrorResponse initialization from Json", () async {
+      expect(ForbiddenErrorResponse.fromJson(sampleForbiddenErrorResponseMap),
+          sampleForbiddenErrorResponse);
     });
   });
 }

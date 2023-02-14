@@ -5,11 +5,17 @@ import 'package:test/test.dart';
 void main() {
   // final instance = UploadResponse();
 
+  Map<String, dynamic> sampleUploadResponseJson = {
+    'cid': "bafkreidivzimqfqtoqxkrpge6bjyhlvxqs3rhe73owtmdulaxr5do5in7u",
+  };
+  
+  UploadResponse sampleUploadResponse = UploadResponse(
+      cid: "bafkreidivzimqfqtoqxkrpge6bjyhlvxqs3rhe73owtmdulaxr5do5in7u",
+  );
+
   group('test UploadResponse', () {
-    // Self-describing content-addressed identifiers for distributed systems. Check the [CID (Content IDentifier) Specification](https://github.com/multiformats/cid) for more info.
-    // String cid
-    test('to test the property `cid`', () async {
-      // TODO
+    test('Test UploadResponse initialization from Json', () async {
+      expect(UploadResponse.fromJson(sampleUploadResponseJson), sampleUploadResponse);
     });
   });
 }

@@ -5,15 +5,23 @@ import 'package:test/test.dart';
 void main() {
   // final instance = UnauthorizedErrorResponse();
 
+  Map<String, dynamic> sampleUnauthorizedErrorResponseJson = {
+    'name': 'HTTP Error',
+    'message': 'Unauthorized',
+  };
+
+  UnauthorizedErrorResponse sampleUnauthorizedErrorResponse = UnauthorizedErrorResponse(
+      name: 'HTTP Error',
+      message: 'Unauthorized',
+  );
+
   group('test UnauthorizedErrorResponse', () {
     // String name (default value: 'HTTP Error')
-    test('to test the property `name`', () async {
-      // TODO
-    });
-
     // String message (default value: 'Unauthorized')
-    test('to test the property `message`', () async {
-      // TODO
+
+    test("To test UnauthorizedErrorResponse initialization from Json", () async {
+      expect(UnauthorizedErrorResponse.fromJson(sampleUnauthorizedErrorResponseJson),
+          sampleUnauthorizedErrorResponse);
     });
   });
 }

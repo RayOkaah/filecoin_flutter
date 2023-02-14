@@ -4,16 +4,21 @@ import 'package:test/test.dart';
 // tests for ErrorResponse
 void main() {
   // final instance = ErrorResponse();
+  Map<String, dynamic> sampleErrorResponseJson = {
+    'name': 'errorname',
+    'message': 'message here'
+  };
+
+  ErrorResponse sampleErrorResponse = ErrorResponse(
+    name: 'errorname',
+      message: 'message here'
+  );
 
   group('test ErrorResponse', () {
     // String name
-    test('to test the property `name`', () async {
-      // TODO
-    });
-
     // String message
-    test('to test the property `message`', () async {
-      // TODO
+    test("To test UnauthorizedErrorResponse initialization from Json", () async {
+      expect(ErrorResponse.fromJson(sampleErrorResponseJson), sampleErrorResponse);
     });
   });
 }

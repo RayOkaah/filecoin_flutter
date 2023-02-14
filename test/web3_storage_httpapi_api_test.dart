@@ -1,18 +1,33 @@
 import 'package:FilecoinStorage/api.dart';
+import 'package:http/http.dart' as http;
 import 'package:test/test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class Web3StorageMock  extends Mock implements Web3StorageHTTPAPIApi {}
 
 /// tests for Web3StorageHTTPAPIApi
 void main() {
-  // final instance = Web3StorageHTTPAPIApi();
+  final mockInstance = Web3StorageMock();
 
   group('tests for Web3StorageHTTPAPIApi', () {
+
     // Retrieve a CAR
     //
     // Retrieve an [IPFS DAG](https://docs.ipfs.io/concepts/merkle-dag/) (Directed Acyclic Graph) packaged in a CAR file by using `/car/{cid}`, supplying the CID of the data you are interested in.
     //
-    //Future<MultipartFile> getCarCid(String cid) async
+    http.MultipartFile? _multiPartFile;
+    var imgfile = 'img.jpg';
+
+
     test('test getCarCid', () async {
-      // TODO
+      _multiPartFile = await http.MultipartFile.fromBytes("img.jpg",
+        [0],
+        filename: 'file-name',
+      );
+      // when(mockInstance.getCarCid('123')).thenAnswer((_) async => Future.value(_multiPartFile));
+      when(() => mockInstance.getCarCid('123')).thenAnswer((_) async => Future.value(_multiPartFile));
+      expect(await mockInstance.getCarCid('123'), _multiPartFile);
+      await mockInstance.getCarCid('123');
     });
 
     // Retrieve information about an upload
@@ -21,7 +36,13 @@ void main() {
     //
     //Future<Status> getStatusCid(String cid) async
     test('test getStatusCid', () async {
-      // TODO
+      //when(mockInstance.getStatusCid('123')).thenAnswer((_) {
+        //return  Future.value(Status(cid: '123'));
+      //});
+      when(() => mockInstance.getStatusCid('123')).thenAnswer((_) {
+        return  Future.value(Status(cid: '123'));
+      });
+      expect(await mockInstance.getStatusCid('123'), Status(cid: '123'));
     });
 
     // Returns a single upload
@@ -30,7 +51,10 @@ void main() {
     //
     //Future<List<Status>> getUserUpload() async
     test('test getUserUpload', () async {
-      // TODO
+      List<Status> _statusList = [];
+      //when(mockInstance.getUserUpload()).thenAnswer((_) => Future.value(_statusList));
+      when(() => mockInstance.getUserUpload()).thenAnswer((_) => Future.value(_statusList));
+      expect(await mockInstance.getUserUpload(), _statusList);
     });
 
     // List previous uploads

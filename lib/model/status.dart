@@ -46,7 +46,7 @@ class Status {
 
   @override
   String toString() =>
-      'Status[cid=$cid, dagSize=$dagSize, created=$created, pins=$pins, deals=$deals]';
+      'cid=$cid, dagSize=$dagSize, created=$created, pins=$pins, deals=$deals';
 
   Map<String, dynamic> toJson() {
     final _json = <String, dynamic>{};
@@ -66,6 +66,7 @@ class Status {
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
   static Status? fromJson(dynamic value) {
+    print('wagan '+value.toString());
     if (value is Map) {
       final json = value; //value.cast<String, dynamic>();
       print('jason '+json.toString());

@@ -1,23 +1,27 @@
 part of FilecoinStorage.client;
 
 class ApiClient {
-  ApiClient({this.basePath = 'https://api.web3.storage', this.authentication});
+  ApiClient({this.basePath = 'api.web3.storage', this.authentication, this.httpClient});
 
   final String basePath;
+  var httpClient;
 
   var _client = Client();
 
   /// Returns the current HTTP [Client] instance to use in this class.
   ///
   /// The return value is guaranteed to never be null.
-  Client get client => _client;
+  Client get client => httpClient?? Client();
 
   /// Requests to use a new HTTP [Client] in this class.
-  set client(Client newClient) {
+  set client(var newClient) {
     _client = newClient;
   }
 
-  final _defaultHeaderMap = <String, String>{};
+  final _defaultHeaderMap = <String, String>{
+    //"Content-type": "multipart/form-data",
+    //"accept": "application/json",
+  };
   final Authentication? authentication;
 
   void addDefaultHeader(String key, String value) {
@@ -34,8 +38,9 @@ class ApiClient {
     List<QueryParam> queryParams,
     Object? body,
     Map<String, String> headerParams,
-    Map<String, String> formParams,
+    Map<String, dynamic> formParams,
     String? contentType,
+      {String newBasePath = "api.web3.storage", html.File? fileResult =null}
   ) async {
     _updateParamsForAuth(queryParams, headerParams);
 
@@ -48,7 +53,8 @@ class ApiClient {
     final queryString = urlEncodedQueryParams.isNotEmpty
         ? '?${urlEncodedQueryParams.join('&')}'
         : '';
-    final uri = Uri.parse('$basePath$path$queryString');
+    //final uri = Uri.parse('$newBasePath$path$queryString');
+    final uri = Uri.https(newBasePath, path,);
 
     try {
       // Special case for uploading a single file which isn't a 'multipart/form-data'.
@@ -65,9 +71,71 @@ class ApiClient {
               onError: (Object error, StackTrace trace) => request.sink.close(),
               cancelOnError: true,
             );
-        final response = await _client.send(request);
+        final response = await client.send(request);
         return Response.fromStream(response);
       }
+
+      if(body is List<MultipartFile>){
+        //bool isHtml= body[0] is html.File?true : false;
+        MultipartRequest request = MultipartRequest(method, uri);
+        //add headers
+        request.headers.addAll(headerParams);
+
+        for(int i=0; i<body.length; i++){
+         // final bytesFromSingleFile = await getBytesFromFile(body[i]);
+         // String fileName = isHtml? body[i].name : body[i].path.split("/").last;
+          print('fida  '+body[i].field.toString());
+          formParams['file'+i.toString()] = await body[i];
+          request.headers['content-disposition'] = "attachment;filename="+ body[i].filename.toString();
+          request.fields['content-disposition'] = "attachment;filename="+ body[i].filename.toString();
+          request.fields['file'] = body[i].field;
+        }
+
+        request.files.addAll(body);
+
+        print('zangolo2');
+        var response = await request.send();
+        // StreamedResponse responseStream = await request.send();
+        print(response.statusCode);
+        // Response.fromStream(response);
+/**
+            // listen for response
+            response.stream.transform(utf8.decoder).listen((value) {
+            print(value);
+            print('pangolo4');
+            });
+            */
+
+      }
+
+      if(body is MultipartFile){
+        final request = MultipartRequest(method, uri);
+
+        //add headers
+        request.headers.addAll(headerParams);
+
+        //adding params
+        request.fields['file'] = body.field;
+        //request.fields['firstName'] = 'abc';
+         //request.fields['lastName'] = 'efg';
+        //request.fields.addAll(body.fields);
+        // send
+        // add file to multipart
+        request.files.add(body);
+        var response = await request.send();
+        final respStr = await response.stream.bytesToString();
+       // StreamedResponse responseStream = await request.send();
+        //var response = await request.send();
+        print(response.statusCode);
+       // Response.fromStream(response);
+        /**
+        // listen for response
+        response.stream.transform(utf8.decoder).listen((value) {
+          print(value);
+          print('pangolo4');
+      });
+        */
+            }
 
       if (body is MultipartRequest) {
         final request = MultipartRequest(method, uri);
@@ -75,51 +143,51 @@ class ApiClient {
         request.files.addAll(body.files);
         request.headers.addAll(body.headers);
         request.headers.addAll(headerParams);
-        final response = await _client.send(request);
+        final response = await client.send(request);
         return Response.fromStream(response);
       }
 
-      final msgBody = contentType == 'application/x-www-form-urlencoded'
-          ? formParams
-          : await serializeAsync(body);
+      final msgBody = formParams; //contentType == 'application/x-www-form-urlencoded'
+        //  ? formParams
+        //  : await serializeAsync(body);
       final nullableHeaderParams = headerParams.isEmpty ? null : headerParams;
 
       switch (method) {
         case 'POST':
-          return await _client.post(
+          return await client.post(
             uri,
             headers: nullableHeaderParams,
-            body: msgBody,
+            body: formParams,
           );
         case 'PUT':
-          return await _client.put(
+          return await client.put(
             uri,
             headers: nullableHeaderParams,
             body: msgBody,
           );
         case 'DELETE':
-          return await _client.delete(
+          return await client.delete(
             uri,
             headers: nullableHeaderParams,
             body: msgBody,
           );
         case 'PATCH':
-          return await _client.patch(
+          return await client.patch(
             uri,
             headers: nullableHeaderParams,
             body: msgBody,
           );
         case 'HEAD':
-          return await _client.head(
+          return await client.head(
             uri,
             headers: nullableHeaderParams,
           );
         case 'GET':
-          return await _client.get(
+          return await client.get(
             uri,
             headers: nullableHeaderParams,
           );
-      }
+      }/**
     } on SocketException catch (error, trace) {
       throw ApiException.withInner(
         HttpStatus.badRequest,
@@ -148,6 +216,7 @@ class ApiClient {
         error,
         trace,
       );
+      */
     } on Exception catch (error, trace) {
       throw ApiException.withInner(
         HttpStatus.badRequest,
@@ -322,3 +391,12 @@ Future<dynamic> deserializeAsync(DeserializationMessage message) async {
 /// Primarily intended for use in an isolate.
 Future<String> serializeAsync(Object? value) async =>
     value == null ? '' : json.encode(value);
+
+extension MapFromList<Element> on List<Element> {
+  Map<Key, Element> toMap<Key>(
+      MapEntry<Key, Element> Function(Element e) getEntry) =>
+      Map.fromEntries(map(getEntry));
+
+  Map<Key, Element> toMapWhereKey<Key>(Key Function(Element e) getKey) =>
+      Map.fromEntries(map((e) => MapEntry(getKey(e), e)));
+}

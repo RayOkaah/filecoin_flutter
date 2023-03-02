@@ -51,7 +51,7 @@ class Pin {
 
   @override
   String toString() =>
-      'Pin[peerId=$peerId, peerName=$peerName, region=$region, status=$status, updated=$updated]';
+      'peerId=$peerId, peerName=$peerName, region=$region, status=$status, updated=$updated';
 
   Map<String, dynamic> toJson() {
     final _json = <String, dynamic>{};
@@ -105,11 +105,10 @@ class Pin {
   }
 
   static List<Pin>? listFromJson(
-    dynamic json, {
-    bool growable = false,
-  }) {
-    final result = json; //<Pin>[];
-    /**
+      dynamic json, {
+        bool growable = false,
+      }) {
+    final result = <Pin>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
         final value = Pin.fromJson(row);
@@ -118,8 +117,7 @@ class Pin {
         }
       }
     }
-    */
-    return result; //.toList(growable: growable);
+    return result.toList(growable: growable);
   }
 
   static Map<String, Pin> mapFromJson(dynamic json) {
@@ -156,6 +154,55 @@ class Pin {
     }
     return map;
   }
+
+/**
+  class Pin {
+  String? status;
+  String? updated;
+  String? peerId;
+  String? peerName;
+  String? region;
+
+  Pin({this.status, this.updated, this.peerId, this.peerName, this.region});
+
+  Pin.fromJson(Map<String, dynamic> json) {
+  status = json['status'];
+  updated = json['updated'];
+  peerId = json['peerId'];
+  peerName = json['peerName'];
+  region = json['region'];
+  }
+
+  Map<String, dynamic> toJson() {
+  final Map<String, dynamic> data = new Map<String, dynamic>();
+  data['status'] = this.status;
+  data['updated'] = this.updated;
+  data['peerId'] = this.peerId;
+  data['peerName'] = this.peerName;
+  data['region'] = this.region;
+  return data;
+  }
+
+  static List<Pin>? listFromJson(
+      dynamic json, {
+        bool growable = false,
+      }) {
+    final result = <Pin>[];
+    if (json is List && json.isNotEmpty) {
+      for (final row in json) {
+        final value = Pin.fromJson(row);
+        if (value != null) {
+          result.add(value);
+        }
+      }
+    }
+    return result.toList(growable: growable);
+  }
+
+  }
+
+*/
+
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{"peerId"};

@@ -64,13 +64,20 @@ String parameterToString(dynamic value) {
 /// Returns the decoded body as UTF-8 if the given headers indicate an 'application/json'
 /// content type. Otherwise, returns the decoded body as decoded by dart:http package.
 Future<String> _decodeBodyBytes(Response response) async {
-  final contentType = response.headers['content-type'];
+  //final contentType = response.headers['content-type'];
+  //final contentDisposition = response.headers['content-disposition'];
+  //print('contenttypehere '+contentType.toString());
+  //print('filenamehere '+contentDisposition.toString().split('filename="')[1].split('"')[0]);
+  print('rokares '+response.body.toString());
+  /**
   return contentType != null &&
           contentType.toLowerCase().startsWith('application/json')
       ? response.bodyBytes.isEmpty
           ? ''
           : utf8.decode(response.bodyBytes)
       : response.body;
+  */
+  return response.body;
 }
 
 /// Returns a valid [T] value found at the specified Map [key], null otherwise.

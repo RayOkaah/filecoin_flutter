@@ -5,13 +5,18 @@ library FilecoinStorage.client;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:html';
 
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
+import 'dart:io' as io;
+import 'dart:html' as html;
+import 'dart:typed_data';
 
 part 'api_client.dart';
 part 'api_helper.dart';
+part 'file_helper.dart';
 part 'api_exception.dart';
 part 'auth/authentication.dart';
 part 'auth/api_key_auth.dart';

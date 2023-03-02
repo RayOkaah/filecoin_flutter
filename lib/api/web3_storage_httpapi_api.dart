@@ -6,6 +6,34 @@ class Web3StorageHTTPAPIApi {
 
   final ApiClient apiClient;
 
+  Future<Response> viewCarFilesCid(
+      String cid,
+      ) async {
+    // ignore: prefer_c+onst_declarations
+    final path = "/";
+    String directorySubDomain = ".ipfs.w3s.link";
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      newBasePath: "https://"+cid+directorySubDomain
+    );
+  }
+
   /// Retrieve a CAR
   ///
   /// Retrieve an [IPFS DAG](https://docs.ipfs.io/concepts/merkle-dag/) (Directed Acyclic Graph) packaged in a CAR file by using `/car/{cid}`, supplying the CID of the data you are interested in.
@@ -15,7 +43,7 @@ class Web3StorageHTTPAPIApi {
   /// Parameters:
   ///
   /// * [String] cid (required):
-  Future<Response> getCarCidWithHttpInfo(
+  Future<Response> _getCarCidWithHttpInfo(
     String cid,
   ) async {
     // ignore: prefer_const_declarations
@@ -51,7 +79,7 @@ class Web3StorageHTTPAPIApi {
   Future<MultipartFile?> getCarCid(
     String cid,
   ) async {
-    final response = await getCarCidWithHttpInfo(
+    final response = await _getCarCidWithHttpInfo(
       cid,
     );
     if (response.statusCode >= HttpStatus.badRequest) {
@@ -62,10 +90,18 @@ class Web3StorageHTTPAPIApi {
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty &&
         response.statusCode != HttpStatus.noContent) {
+      final ret = await apiClient.deserializeAsync(
+        await _decodeBodyBytes(response),
+        'String',
+      ); //as MultipartFile;
+      //print('ret '+ret.toString());
+      return MultipartFile.fromString('field', ret, filename: 'filenamehere',);
+      /**
       return await apiClient.deserializeAsync(
         await _decodeBodyBytes(response),
-        'MultipartFile',
+        'String',
       ) as MultipartFile;
+      */
     }
     return null;
   }
@@ -79,7 +115,7 @@ class Web3StorageHTTPAPIApi {
   /// Parameters:
   ///
   /// * [String] cid (required):
-  Future<Response> getStatusCidWithHttpInfo(
+  Future<Response> _getStatusCidWithHttpInfo(
     String cid,
   ) async {
     // ignore: prefer_const_declarations
@@ -115,7 +151,7 @@ class Web3StorageHTTPAPIApi {
   Future<Status?> getStatusCid(
     String cid,
   ) async {
-    final response = await getStatusCidWithHttpInfo(
+    final response = await _getStatusCidWithHttpInfo(
       cid,
     );
     if (response.statusCode >= HttpStatus.badRequest) {
@@ -139,9 +175,9 @@ class Web3StorageHTTPAPIApi {
   /// Retrieve the upload metadata of as single upload.  The information returned includes the creation date and file size, as well as details about how the network is storing your data. Using this information, you can identify peers on the [IPFS (InterPlanetary File System)](https://ipfs.io) network that are pinning the data, and [Filecoin](https://filecoin.io) storage providers that have accepted deals to store the data.
   ///
   /// Note: This method returns the HTTP [Response].
-  Future<Response> getUserUploadWithHttpInfo() async {
+  Future<Response> _getUserUploadWithHttpInfo(String cid) async {
     // ignore: prefer_const_declarations
-    final path = r'/user/uploads/{cid}';
+    final path = r'/user/uploads/{cid}'.replaceAll('{cid}', cid);
 
     // ignore: prefer_final_locals
     Object? postBody;
@@ -166,8 +202,8 @@ class Web3StorageHTTPAPIApi {
   /// Returns a single upload
   ///
   /// Retrieve the upload metadata of as single upload.  The information returned includes the creation date and file size, as well as details about how the network is storing your data. Using this information, you can identify peers on the [IPFS (InterPlanetary File System)](https://ipfs.io) network that are pinning the data, and [Filecoin](https://filecoin.io) storage providers that have accepted deals to store the data.
-  Future<List<Status>?> getUserUpload() async {
-    final response = await getUserUploadWithHttpInfo();
+  Future<List<Status>?> getUserUpload(String cid) async {
+    final response = await _getUserUploadWithHttpInfo(cid);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -207,7 +243,7 @@ class Web3StorageHTTPAPIApi {
   ///
   /// * [int] size:
   ///   Specifies the maximum number of uploads to return.
-  Future<Response> getUserUploadsWithHttpInfo({
+  Future<Response> _getUserUploadsWithHttpInfo({
     DateTime? before,
     String? sortBy,
     String? sortOrder,
@@ -280,13 +316,14 @@ class Web3StorageHTTPAPIApi {
     int? page,
     int? size,
   }) async {
-    final response = await getUserUploadsWithHttpInfo(
+    final response = await _getUserUploadsWithHttpInfo(
       before: before,
       sortBy: sortBy,
       sortOrder: sortOrder,
       page: page,
       size: size,
     );
+
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -313,7 +350,7 @@ class Web3StorageHTTPAPIApi {
   /// Parameters:
   ///
   /// * [String] cid (required):
-  Future<Response> headCarCidWithHttpInfo(
+  Future<Response> _headCarCidWithHttpInfo(
     String cid,
   ) async {
     // ignore: prefer_const_declarations
@@ -349,7 +386,7 @@ class Web3StorageHTTPAPIApi {
   Future<void> headCarCid(
     String cid,
   ) async {
-    final response = await headCarCidWithHttpInfo(
+    final response = await _headCarCidWithHttpInfo(
       cid,
     );
     if (response.statusCode >= HttpStatus.badRequest) {
@@ -372,7 +409,6 @@ class Web3StorageHTTPAPIApi {
     // ignore: prefer_const_declarations
     final path = r'/car';
 
-    // ignore: prefer_final_locals
     Object? postBody = body;
 
     final queryParams = <QueryParam>[];
@@ -381,9 +417,11 @@ class Web3StorageHTTPAPIApi {
 
     const contentTypes = <String>[
       'application/vnd.ipld.car',
-      'application/octet-stream'
+      //'application/octet-stream'
     ];
+    //const contentTypes = <String>['application/x-www-form-urlencoded'];
 
+print('zawq');
     return apiClient.invokeAPI(
       path,
       'POST',
@@ -411,6 +449,7 @@ class Web3StorageHTTPAPIApi {
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
+    print('bazx');
     // When a remote server returns no body with a status of 204, we shall not decode it.
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
@@ -424,16 +463,14 @@ class Web3StorageHTTPAPIApi {
     return null;
   }
 
-  /// Upload and store one or more files
-  ///
-  /// Store files using web3.storage. You can upload either a single file or multiple files.  Send the POST request with one of the following: - a single file, with a single blob/file object as the body - multiple files, as `FormData` with `Content-Disposition` headers for each part to specify filenames and the request header `Content-Type: multipart/form-data`  Requests to this endpoint have a maximum payload size of 100MB. To upload larger files, see the documentation for the `/car` endpoint.  You can also provide a name for the file using the header `X-NAME`, but be sure to encode the filename first. For example `LICENSE–MIT` should be sent as `LICENSE%E2%80%93MIT`.
+  /// Upload and store one file
   ///
   /// Note: This method returns the HTTP [Response].
   ///
   /// Parameters:
   ///
   /// * [List<MultipartFile>] file:
-  Future<Response> postUploadWithHttpInfo({
+  Future<Response> _postUploadWithHttpInfo({
     MultipartFile? file,
   }) async {
     // ignore: prefer_const_declarations
@@ -442,23 +479,30 @@ class Web3StorageHTTPAPIApi {
     // ignore: prefer_final_locals
     Object? postBody;
 
+    print('lakai q');
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
     final formParams = <String, String>{};
 
-    const contentTypes = <String>['multipart/form-data'];
+    //const contentTypes = <String>['multipart/form-data'];
+    const contentTypes = <String>['application/x-www-form-urlencoded'];
 
     bool hasFields = false;
+    print('lakai q1');
     final mp = MultipartRequest('POST', Uri.parse(path));
+    print('lakai q2');
     if (file != null) {
+      print('lakai q3');
       hasFields = true;
       mp.fields[r'file'] = file.field;
       mp.files.add(file);
     }
     if (hasFields) {
-      postBody = mp;
+      //postBody = mp;
     }
-
+    postBody = file;
+    print('lakai q4'+path.toString()+' nbk '+queryParams.toString()+ ' nfj '+postBody.toString()+
+        ' xmx '+headerParams.toString()+ ' jl '+formParams.toString());
     return apiClient.invokeAPI(
       path,
       'POST',
@@ -470,18 +514,84 @@ class Web3StorageHTTPAPIApi {
     );
   }
 
-  /// Upload and store one or more files
-  ///
-  /// Store files using web3.storage. You can upload either a single file or multiple files.  Send the POST request with one of the following: - a single file, with a single blob/file object as the body - multiple files, as `FormData` with `Content-Disposition` headers for each part to specify filenames and the request header `Content-Type: multipart/form-data`  Requests to this endpoint have a maximum payload size of 100MB. To upload larger files, see the documentation for the `/car` endpoint.  You can also provide a name for the file using the header `X-NAME`, but be sure to encode the filename first. For example `LICENSE–MIT` should be sent as `LICENSE%E2%80%93MIT`.
+  /// Upload and store one file
   ///
   /// Parameters:
   ///
-  /// * [List<MultipartFile>] file:
+  /// * [MultipartFile] file:
   Future<UploadResponse?> postUpload({
     MultipartFile? file,
   }) async {
-    final response = await postUploadWithHttpInfo(
+    print('lakai0 ');
+    final response = await _postUploadWithHttpInfo(
       file: file,
+    );
+    print('lakai1 '+ response.toString());
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    print('lakai2 ');
+    if (response.body.isNotEmpty &&
+        response.statusCode != HttpStatus.noContent) {
+      print('lakai3 '+response.body.toString());
+      return await apiClient.deserializeAsync(
+        await _decodeBodyBytes(response),
+        'UploadResponse',
+      ) as UploadResponse;
+    }
+    return null;
+  }
+
+
+
+  /// Upload and store one or more files
+  /// * [List<MultipartFile>] file:
+  Future<Response> _postUploadMultipleWithHttpInfo({
+    List<MultipartFile>? files, html.File? fileResult
+  }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/upload';
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    print('lakai q');
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    //const contentTypes = <String>['multipart/form-data'];
+    //const contentTypes = <String>['application/x-www-form-urlencoded'];
+    const contentTypes = <String>[
+      'application/x-www-form-urlencoded',
+      'multipart/form-data'
+    ];
+
+    print('lakai q1');
+      print('lakai q3');
+      postBody = files;
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+
+  /// Upload and store more than one file at once
+  ///
+  /// Parameters:
+  ///
+  /// * [List<MultipartFile>] files:
+  Future<UploadResponse?> uploadMultipleFiles({
+    List<MultipartFile>? files, var fileResult = null
+  }) async {
+    final response = await _postUploadMultipleWithHttpInfo(
+      files: files,
     );
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
@@ -489,6 +599,7 @@ class Web3StorageHTTPAPIApi {
     // When a remote server returns no body with a status of 204, we shall not decode it.
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
+
     if (response.body.isNotEmpty &&
         response.statusCode != HttpStatus.noContent) {
       return await apiClient.deserializeAsync(

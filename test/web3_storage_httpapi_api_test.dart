@@ -53,8 +53,8 @@ void main() {
     test('test getUserUpload', () async {
       List<Status> _statusList = [];
       //when(mockInstance.getUserUpload()).thenAnswer((_) => Future.value(_statusList));
-      when(() => mockInstance.getUserUpload()).thenAnswer((_) => Future.value(_statusList));
-      expect(await mockInstance.getUserUpload(), _statusList);
+      when(() => mockInstance.getUserUpload('123')).thenAnswer((_) => Future.value(_statusList));
+      expect(await mockInstance.getUserUpload('123'), _statusList);
     });
 
     // List previous uploads

@@ -56,6 +56,7 @@ void main() {
 
 
     test("To test Status initialization from Json", () async {
+      print('sakapa '+sampleStatusJson.toString());
       expect(Status.fromJson(sampleStatusJson), sampleStatus);
     });
 

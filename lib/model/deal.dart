@@ -15,30 +15,24 @@ class Deal {
   });
 
   /// On-chain ID of the deal.
-
   num? dealId;
 
   /// Address of the provider storing this data.
-
   String? storageProvider;
 
   /// Current deal status.
   DealStatusEnum status;
 
   /// Filecoin [Piece CID](https://spec.filecoin.io/systems/filecoin_files/piece/) of the data in the deal.
-
   String? pieceCid;
 
   /// CID of the data aggregated in this deal.
-
   String? dataCid;
 
   /// Selector for extracting stored data from the aggregated data root.
-
   String? dataModelSelector;
 
   /// Date when the deal will become active in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
-
   String? activation;
 
   /// Creation date in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
@@ -50,21 +44,21 @@ class Deal {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Deal &&
-          other.dealId == dealId &&
-          other.storageProvider == storageProvider &&
-          other.status == status &&
-          other.pieceCid == pieceCid &&
-          other.dataCid == dataCid &&
-          other.dataModelSelector == dataModelSelector &&
-          other.activation == activation &&
-          other.created == created &&
-          other.updated == updated;
+          other is Deal &&
+              other.dealId == dealId &&
+              other.storageProvider == storageProvider &&
+              other.status == status &&
+              other.pieceCid == pieceCid &&
+              other.dataCid == dataCid &&
+              other.dataModelSelector == dataModelSelector &&
+              other.activation == activation &&
+              other.created == created &&
+              other.updated == updated;
 
   @override
   int get hashCode =>
       // ignore: unnecessary_parenthesis
-      (dealId == null ? 0 : dealId!.hashCode) +
+  (dealId == null ? 0 : dealId!.hashCode) +
       (storageProvider == null ? 0 : storageProvider!.hashCode) +
       (status.hashCode) +
       (pieceCid == null ? 0 : pieceCid!.hashCode) +
@@ -76,7 +70,7 @@ class Deal {
 
   @override
   String toString() =>
-      'Deal[dealId=$dealId, storageProvider=$storageProvider, status=$status, pieceCid=$pieceCid, dataCid=$dataCid, dataModelSelector=$dataModelSelector, activation=$activation, created=$created, updated=$updated]';
+      'dealId=$dealId, storageProvider=$storageProvider, status=$status, pieceCid=$pieceCid, dataCid=$dataCid, dataModelSelector=$dataModelSelector, activation=$activation, created=$created, updated=$updated';
 
   Map<String, dynamic> toJson() {
     final _json = <String, dynamic>{};
@@ -116,9 +110,9 @@ class Deal {
       assert(() {
         requiredKeys.forEach((key) {
           assert(json.containsKey(key),
-              'Required key "Deal[$key]" is missing from JSON.');
+          'Required key "Deal[$key]" is missing from JSON.');
           assert(json[key] != null,
-              'Required key "Deal[$key]" has a null value in JSON.');
+          'Required key "Deal[$key]" has a null value in JSON.');
         });
         return true;
       }());
@@ -141,11 +135,10 @@ class Deal {
   }
 
   static List<Deal>? listFromJson(
-    dynamic json, {
-    bool growable = false,
-  }) {
-    final result = json; //<Deal>[];
-    /**
+      dynamic json, {
+        bool growable = false,
+      }) {
+    final result = <Deal>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
         final value = Deal.fromJson(row);
@@ -154,8 +147,7 @@ class Deal {
         }
       }
     }
-    */
-    return result;//.toList(growable: growable);
+    return result.toList(growable: growable);
   }
 
   static Map<String, Deal> mapFromJson(dynamic json) {
@@ -174,9 +166,9 @@ class Deal {
 
   // maps a json object with a list of Deal-objects as value to a dart map
   static Map<String, List<Deal>> mapListFromJson(
-    dynamic json, {
-    bool growable = false,
-  }) {
+      dynamic json, {
+        bool growable = false,
+      }) {
     final map = <String, List<Deal>>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
@@ -229,9 +221,9 @@ class DealStatusEnum {
       DealStatusEnumTypeTransformer().decode(value);
 
   static List<DealStatusEnum>? listFromJson(
-    dynamic json, {
-    bool growable = false,
-  }) {
+      dynamic json, {
+        bool growable = false,
+      }) {
     final result = <DealStatusEnum>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
